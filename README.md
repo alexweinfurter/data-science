@@ -1,2 +1,2 @@
-# weinfurter
-first github page
+# data science
+blog about data science - under unconstruction
