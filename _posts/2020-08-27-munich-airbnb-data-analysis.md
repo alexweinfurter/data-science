@@ -1,8 +1,7 @@
 ---
 title: "Munich AirBnb Data Analysis"
 date: 2020-08-27
-tags: [airbnb, data analysis, regression, exploratory data analysis]
-excerpt: "AirBnb data analysis, exploratory data analysis, regression"
+excerpt: "Exploratory data analysis of Munich AirBnb data and prediction of AirBnb prices."
 ---
 
 # Munich AirBnb Data Analysis
