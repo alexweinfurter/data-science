@@ -69,11 +69,18 @@ The features "host_since", "first_review" and "last_review" represent timestamps
 To reduce the number of features several feature selection have been performed:
 *  Removed all features related to the host neighbourhood - this shouldn't impact the price.
 * Used correlations to find collinear features and remove highly correlated features.
-* Dropped features with very low variance.
+* Dropped binary features with either true or false occuring very seldom.
 * Dropped features with more than 70% of missing values.
 
 
 ## Modeling 
+To predict the AirBnB prices I trained a regression model with the XGBoost algorithm. 
+
+Although XGBoost is able to handle missing values, all numerical features but the "size" feature have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The "size" feature has been imputed by using a Random Forest Regressor with manually chosen features that could influence the size of the AirBnB. The imputers have only been trained on the training set to avoid data leakage.
+
+The model has been evaluated in 10-fold cross-validation and has an average r-squared of 0.71 on the training set an 0.44 on the test set. The model seems to overfit and only explains 0.44 of the prices variance. 
+
+
 No feature or target scaling has been used since XGBoost (and tree-based models in general) should be invariant to monotonic transformations like log-transform, etc..
 
 ## Model explanation
