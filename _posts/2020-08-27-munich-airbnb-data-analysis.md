@@ -34,13 +34,21 @@ Essentially Inside Airbnb provides three different files:
 ## Methodology
 To analyze the dataset I follow the CRISP-DM cycle. I start with a quick data exploration, clean the dataset and calculate first moments of the data to answer the first two questions. Afterwards I perform some feature engineering and try to build a pricing model. Later the pricing model will be analyzed to get an idea which features influence the price most.
 
+## Exploratory Data Analysis
+To answer the first two questions I first used the calendar dataset to get in impression of the price variation over time. As I assumed the prices are by far the highest during September when the Oktoberfest takes place. Besides there's a weekly seasonality that shows higher prices during the weekend. The AirBnBs tend to be cheapest during spring. The peak during April is probably due to a hugh spring festival in Munich ![Prices](/images/munich-airbnb-data/average_price_per_night.png){:class="img-responsive"}
+
+Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I exluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the daily average booking prices of all AirBnBs in Munich. ![Price at booking time](/images/munich-airbnb-data/prices_at_booking_time.png){:class="img-responsive"}
+In the boxplot you can see that the average rental prices tend to be higher if the booking is made during August or September. So the Oktoberfest-effect still influences the prices for future rentals, although the rental date is not in September when the Oktoberfest takes place. Thus, if you want to travel to Munich, it is probably cheaper to make the booking in another month.
+
+
 ## Data cleaning
-The following steps have been neccessary to get a clean dataset for further processing:
+The following steps have been neccessary to get a clean listings dataset for further processing:
 * Reformat prices
 * Drop listings with extremely high or low prices
 * Drop features with more than 70% missing values
 * Drop listings that are duplicates
 * Drop listings with missing geolocation
+* Drop inactive listings (no activity in 365 days)
 
 ## Feature Engineering
 
@@ -66,8 +74,9 @@ The dataset provides the latitude and longitude of each AirBnb. I've looked up t
 The features "host_since", "first_review" and "last_review" represent timestamps which have been used to calculate the elapsed time till today. 
 
 ### Feature selection
-To reduce the number of features several feature selection have been performed:
-*  Removed all features related to the host neighbourhood - this shouldn't impact the price.
+To reduce the number of features several feature selection steps have been performed:
+* Removed all features related to the host neighbourhood - this shouldn't impact the price.
+* Manually selected amenities that could influence the price.
 * Used correlations to find collinear features and remove highly correlated features.
 * Dropped binary features with either true or false occuring very seldom.
 * Dropped features with more than 70% of missing values.
@@ -78,7 +87,7 @@ To predict the AirBnB prices I trained a regression model with the XGBoost algor
 
 Although XGBoost is able to handle missing values, all numerical features but the "size" feature have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The "size" feature has been imputed by using a Random Forest Regressor with manually chosen features that could influence the size of the AirBnB. The imputers have only been trained on the training set to avoid data leakage.
 
-The model has been evaluated in 10-fold cross-validation and has an average r-squared of 0.71 on the training set an 0.44 on the test set. The model seems to overfit and only explains 0.44 of the prices variance. 
+The model has been evaluated using 10-fold cross-validation and has an average r-squared of 0.71 on the training set and 0.44 on the test set. Thus the model seems to overfit and only explains 0.44 of the prices variance. 
 
 
 No feature or target scaling has been used since XGBoost (and tree-based models in general) should be invariant to monotonic transformations like log-transform, etc..
