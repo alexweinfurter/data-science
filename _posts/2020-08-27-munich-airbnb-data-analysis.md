@@ -4,6 +4,7 @@ date: 2020-08-27
 excerpt: "Exploratory data analysis of Munich AirBnb data and prediction of AirBnb prices."
 header:
    image: /images/munich-airbnb-data/munich_photo.jpg
+   thumbnail: /images/munich-airbnb-data/munich_photo.jpg
 ---
 
 #WORK IN PROGRESS
@@ -65,7 +66,7 @@ ANZAHL DER CATEGORICALs EINFÜGEN
 ### Text-based features
 Although reviews and descriptions of AirBnBs probably contain valuable information I haven't performed advanced natural language processing (NLP). I only created two text-based features:
 * A binary variable containing information about an existing roof top terracce (since roof top terracces in cities are super cool and could increase the price).
-* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regulare expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size.
+* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regular expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size.
 
 ### Binning of numerical features
 There are several features containing rates or review scores (e.g. for cleanliness or location). I used binning to build groups of these features since e.g. scores that are below 8/10 points can be considered as bad on AirBnB.
@@ -90,7 +91,13 @@ To predict the AirBnB prices I trained a regression model with the XGBoost algor
 Although XGBoost is able to handle missing values, all numerical features have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The imputers have only been trained on the training set to avoid data leakage. No feature or target scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
 
 XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
-Afterwards a model has been trained with the best parameter set found. On the training set it has an r-squared of XXX, on the test set of XXX. The mean absolute error of the training set is XXX and of the test set is XXX. Thus the price seems to be influenced by features not available in the dataset and the error is to high to use it for predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
+Afterwards a model has been trained with the best parameter set found. The model has been evaluated using the r-squared at the mean absolut error.
+|   |  r-squared | mae   |
+|---|---|---|
+| Training set|  0.9 | 10  |
+| Test set|  0.5 | 20  |
+
+Since the model only explains parts of the price variance it seems to be influenced by features not available in the dataset. The mean absolut error is to high to use it for good predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
 
 ## Model explanation
 I used the XGBoost feature importance to see which features influence the price most. The features with the highest importance are:
@@ -99,3 +106,9 @@ I used the XGBoost feature importance to see which features influence the price 
 * F3
 
 Afterwards I build an explanation model with SHAP library. The resulting SHAP values have been used to create a summary plot which shows how feature values influence the price. In the summary plot you can e.g. see that the feature XXX increases the price if it has a HIGH/LOW value.
+
+## Future work
+Further data sources could be used to improve the model. The following steps could be worth a try:
+* Using natural language processing (NLP) to get information from the reviews
+* Using NLP for the description and summary of the listing
+* Investigate the photo quality of the listings
