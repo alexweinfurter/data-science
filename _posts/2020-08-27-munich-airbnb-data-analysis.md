@@ -7,8 +7,6 @@ header:
    thumbnail: /images/munich-airbnb-data/munich_photo.jpg
 ---
 
-#WORK IN PROGRESS
-
 ## Motivation
 AirBnb is one of the most successful platforms for apartment rentals world wide. Due to the high housing prices in San Francisco, the original idea of the AirBnb founders was to allow users offering a free bed to travellers to make some extra money. Nowadays AirBnB not only offers short-term rentals at some hosts private apartment but also hotel rooms, long-term apartment rentals and bookable experiences.
 
