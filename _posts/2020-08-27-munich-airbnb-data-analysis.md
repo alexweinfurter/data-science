@@ -20,11 +20,11 @@ Therefore I'll try to find answers to the following four questions:
 
 1. Which time is the most expensive / cheapest to travel to Munich?
 
-2. Is booking earlier cheaper than booking short time in advance and how do prices change over time?
+2. Is making a booking at a certain time of the year more expensive than during the rest of the year?
 
 3. Is it possible to build a model to automatically suggest a price to hosts?
 
-4. Which factors influence the prices most and how do they influence them?
+4. Which factors influence the price most and how do they influence it?
 
 ## Dataset
 AirBnb itself doesn't provide open source data, but a platform called <a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a> scrapes the listings on a monthly basis. I wrote a small web scraper which downloads all the data files that contain data about AirBnbs in Munich.
