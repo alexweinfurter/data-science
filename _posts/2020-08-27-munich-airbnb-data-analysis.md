@@ -66,7 +66,8 @@ ANZAHL DER CATEGORICALs EINFÜGEN
 ### Text-based features
 Although reviews and descriptions of AirBnBs probably contain valuable information I haven't performed advanced natural language processing (NLP). I only created two text-based features:
 * A binary variable containing information about an existing roof top terracce (since roof top terracces in cities are super cool and could increase the price).
-* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regular expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size. 
+* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regular expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size.
+
 ``` python 
 listings['description'] = listings['description'].str.replace("MBit|Mbit|mbit|Min|min|minutes|minute|meter"," ") # removes everything definitely related to time to avoid confusions between size unit and time or bandwidth units
 
@@ -96,6 +97,7 @@ To predict the AirBnB prices I trained a regression model with the XGBoost algor
 Although XGBoost is able to handle missing values, all numerical features have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The imputers have only been trained on the training set to avoid data leakage. No feature or target scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
 
 XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
+
 ``` python
 param_grid = {'xgb__n_estimators': [1500, 2000, 3000],
               'xgb__learning_rate': [0.01, 0.05, 0.1], 
