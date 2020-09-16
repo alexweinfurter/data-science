@@ -41,7 +41,7 @@ To analyze the dataset I follow the CRISP-DM cycle. I start with a quick data ex
 To answer the first two questions I first used the calendar dataset to get an impression of the price variation over time. As I assumed the prices are by far the highest during September when the Oktoberfest takes place. Besides there's a weekly seasonality that shows higher prices during the weekend. The AirBnBs tend to be cheapest during spring. The peak during April is probably due to a hugh spring festival in Munich. 
 ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/average_price_per_night.png)
 
-Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I exluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the average booking prices of all AirBnBs at the time the data has been scraped. ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/prices_at_booking_time.png)
+Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I excluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the average booking prices of all AirBnBs at the time the data has been scraped. ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/prices_at_booking_time.png)
 In the boxplot you can see that the average booking prices tend to be higher if the booking is made during August or September. So the Oktoberfest-effect still influences the prices for future rentals, although the rental date is not in September when the Oktoberfest takes place. Thus, if you want to travel to Munich, it is probably cheaper to make the booking in another month.
 
 ## Data cleaning
@@ -59,9 +59,8 @@ The following steps have been neccessary to get a clean listings dataset for fur
 ### Transformation of categorical variables
 The dataset contains several categorical variables like amenities or the neighbourhood that are transformed into dichotomous variables by using one-hot-encoding.
 
-Especially one-hot-encoding the amenities resulted in a large amount of features. Some amenities have been merged, e.g. "TV", "Cable TV" and "Smart TV" are considered as one feature "TV". Furthermore the total amount of amenities has been calculated.
+Especially one-hot-encoding the amenities resulted in a large amount of features (146 features). Some amenities have been merged, e.g. "TV", "Cable TV" and "Smart TV" are considered as one feature "TV". Furthermore the total amount of amenities has been calculated.
 
-ANZAHL DER CATEGORICALs EINFÜGEN
 
 ### Text-based features
 Although reviews and descriptions of AirBnBs probably contain valuable information I haven't performed advanced natural language processing (NLP). I only created two text-based features:
@@ -78,7 +77,7 @@ listings['size'] = listings['description'].str.extract(u'(\d{2,3}\s*?(m²|qm|sq|
 There are several features containing rates or review scores (e.g. for cleanliness or location). I used binning to build groups of these features since e.g. scores that are below 8/10 points can be considered as bad on AirBnB.
 
 ### Location based features
-The dataset provides the latitude and longitude of each AirBnb. I've looked up the geolocation of several points of interest in Munich (e.g. where the Oktoberfest takes place, the Hofbraeuhaus and the Marienplatz, which is basically the city center) and calculated the haversine distance (greate circle distance) to these points. Afterwards I've calculated the average distance to all points of interest as additional feature.
+The dataset provides the latitude and longitude of each AirBnb. I've looked up the geo-coordinates of several points of interest in Munich (e.g. where the Oktoberfest takes place or the Marienplatz, which is more or less the city center) and calculated the haversine distance to these points. Afterwards I've calculated the average distance to all points of interest as additional feature.
 
 ### Time based features
 The features "host_since", "first_review" and "last_review" represent timestamps which have been used to calculate the elapsed time till today. 
@@ -90,11 +89,12 @@ To reduce the high dimensionality of the dataset, several feature selection step
 * Dropped binary features with low variance.
 * Dropped features with more than 70% of missing values.
 
+After performing the feature selection the dataset consisted of 95 features.
 
 ## Modeling 
 To predict the AirBnB prices I trained a regression model with the XGBoost algorithm. 
 
-Although XGBoost is able to handle missing values, all numerical features have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The imputers have only been trained on the training set to avoid data leakage. No feature or target scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
+Although XGBoost is able to handle missing values, all numerical features have been imputed with an Iterative Imputer (which is basically an iterative Bayesian Ridge regression). Neither feature transformations nor scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
 
 XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
 
@@ -120,18 +120,22 @@ Afterwards a model has been trained with the best parameter set found. The model
 
 |   |  r-squared | mae   |
 |---|---|---|
-| Training set|  0.9 | 10  |
-| Test set|  0.5 | 20  |
+| Training set|  0.884 | 10.8  |
+| Test set|  0.499 | 23.0 |
 
 Since the model only explains parts of the price variance it seems to be influenced by features not available in the dataset. The mean absolut error is to high to use it for good predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
 
 ## Model explanation
-I used the XGBoost feature importance to see which features influence the price most. The features with the highest importance are:
-* F1
-* F2
-* F3
+To answer the last question I used the XGBoost feature importance as well as SHAP values. The features with the highest importance for the price predictions of the model are:
+* cancellation_policy_stict_14_with_grace_period
+* cancellation_policy_flexible
+* latitude
 
-Afterwards I build an explanation model with SHAP library. The resulting SHAP values have been used to create a summary plot which shows how feature values influence the price. In the summary plot you can e.g. see that the feature XXX increases the price if it has a HIGH/LOW value.
+![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/feature_importance.png)
+
+Afterwards I build an explanation model with <a href="https://github.com/slundberg/shap">SHAP</a>. The calculated SHAP values have been used to create a summary plot which shows how feature values influence the price. In the summary plot you can e.g. see that the feature "cancellation_policy_stict_14_with_grace_period" increases the price if it is true and decreases the price if it is false.
+
+![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/shap_summary_plot.png)
 
 ## Future work
 Further data sources could be used to improve the model. The following steps could be worth a try:
