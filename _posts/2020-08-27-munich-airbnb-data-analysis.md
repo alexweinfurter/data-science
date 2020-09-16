@@ -66,7 +66,12 @@ ANZAHL DER CATEGORICALs EINFÜGEN
 ### Text-based features
 Although reviews and descriptions of AirBnBs probably contain valuable information I haven't performed advanced natural language processing (NLP). I only created two text-based features:
 * A binary variable containing information about an existing roof top terracce (since roof top terracces in cities are super cool and could increase the price).
-* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regular expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size.
+* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regular expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size. 
+``` python 
+listings['description'] = listings['description'].str.replace("MBit|Mbit|mbit|Min|min|minutes|minute|meter"," ") # removes everything definitely related to time to avoid confusions between size unit and time or bandwidth units
+
+listings['size'] = listings['description'].str.extract(u'(\d{2,3}\s*?(m²|qm|sq|sm|quadratmeter|meter²|meters²))',expand=True, flags=re.IGNORECASE)[0]
+```
 
 ### Binning of numerical features
 There are several features containing rates or review scores (e.g. for cleanliness or location). I used binning to build groups of these features since e.g. scores that are below 8/10 points can be considered as bad on AirBnB.
@@ -91,6 +96,24 @@ To predict the AirBnB prices I trained a regression model with the XGBoost algor
 Although XGBoost is able to handle missing values, all numerical features have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The imputers have only been trained on the training set to avoid data leakage. No feature or target scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
 
 XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
+``` python
+param_grid = {'xgb__n_estimators': [1500, 2000, 3000],
+              'xgb__learning_rate': [0.01, 0.05, 0.1], 
+              'xgb__max_depth': [3, 6, 8],
+              'xgb__colsample_bytree': [0.6, 0.7, 0.8],
+              'xgb__subsample': [0.8,0.9],
+              'xgb__min_child_weight': [5,10,15],
+              'xgb__reg_alpha': [0, 0.5, 1],
+              'xgb__reg_lambda': [2, 3, 4, 5],
+              'xgb__gamma': [0.0, 0.2, 0.5]}
+
+# total of 17496 possible parameter combinations
+# use randomized search to limit the number of iterations and save time
+param_search = RandomizedSearchCV(pipeline, param_grid, cv=3, verbose=True, n_iter=2000, n_jobs=-1)
+# perform parameter search
+param_search.fit(X_train, y_train)
+```
+
 Afterwards a model has been trained with the best parameter set found. The model has been evaluated using the r-squared at the mean absolut error.
 
 |   |  r-squared | mae   |
