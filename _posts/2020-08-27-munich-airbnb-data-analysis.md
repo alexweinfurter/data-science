@@ -38,18 +38,17 @@ Essentially Inside Airbnb provides three different files:
 To analyze the dataset I follow the CRISP-DM cycle. I start with a quick data exploration, clean the dataset and calculate first moments of the data to answer the first two questions. Afterwards I perform some feature engineering and try to build a pricing model. Later the pricing model will be analyzed to get an idea which features influence the price most.
 
 ## Exploratory Data Analysis
-To answer the first two questions I first used the calendar dataset to get an impression of the price variation over time. As I assumed the prices are by far the highest during September when the Oktoberfest takes place. Besides there's a weekly seasonality that shows higher prices during the weekend. The AirBnBs tend to be cheapest during spring. The peak during April is probably due to a hugh spring festival in Munich. 
+To answer the first two questions I used the calendar dataset to get an impression of the price variation over time. As I assumed the prices are by far the highest during September when the Oktoberfest takes place. Besides there's a weekly seasonality that shows higher prices during the weekend. The AirBnBs tend to be cheapest during spring. The peak during April is probably due to a hugh spring festival in Munich. 
 ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/average_price_per_night.png)
 
 Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I excluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the average booking prices of all AirBnBs at the time the data has been scraped. ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/prices_at_booking_time.png)
 In the boxplot you can see that the average booking prices tend to be higher if the booking is made during August or September. So the Oktoberfest-effect still influences the prices for future rentals, although the rental date is not in September when the Oktoberfest takes place. Thus, if you want to travel to Munich, it is probably cheaper to make the booking in another month.
 
 ## Data cleaning
-To answer the next questions the listings dataset has been used.
+To answer the questions about the pricing the listings dataset has been used.
 The following steps have been neccessary to get a clean listings dataset for further processing:
 * Reformat prices
 * Drop listings with extremely high or low prices (outliers)
-* Drop features with more than 80% missing values
 * Drop listings that are duplicates
 * Drop listings with missing geolocation
 * Drop inactive listings (no activity in 365 days)
@@ -87,7 +86,7 @@ To reduce the high dimensionality of the dataset, several feature selection step
 * Manually selected amenities that are more likely to influence the price.
 * Used correlations to find collinear features and remove highly correlated features.
 * Dropped binary features with low variance.
-* Dropped features with more than 70% of missing values.
+* Dropped features with more than 80% of missing values.
 
 After performing the feature selection the dataset consisted of 95 features.
 
