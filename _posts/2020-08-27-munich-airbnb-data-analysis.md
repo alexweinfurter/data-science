@@ -92,6 +92,7 @@ Although XGBoost is able to handle missing values, all numerical features have b
 
 XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
 Afterwards a model has been trained with the best parameter set found. The model has been evaluated using the r-squared at the mean absolut error.
+
 |   |  r-squared | mae   |
 |---|---|---|
 | Training set|  0.9 | 10  |
