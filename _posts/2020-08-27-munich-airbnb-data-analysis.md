@@ -2,6 +2,8 @@
 title: "Munich AirBnb Data Analysis"
 date: 2020-08-27
 excerpt: "Exploratory data analysis of Munich AirBnb data and prediction of AirBnb prices."
+header:
+	image: /images/munich-airbnb-data/munich_photo.jpg
 ---
 
 #WORK IN PROGRESS
@@ -24,7 +26,7 @@ Therefore I'll try to find answers to the following four questions:
 4. Which factors influence the prices most and how do they influence them?
 
 ## Dataset
-AirBnb itself doesn't provide open source data, but a platform called Inside Airbnb scrapes the listings on a monthly basis (see http://insideairbnb.com/get-the-data.html). I wrote a small web scraper which downloads all the data files that contain data about AirBnbs in Munich.
+AirBnb itself doesn't provide open source data, but a platform called <a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a> scrapes the listings on a monthly basis. I wrote a small web scraper which downloads all the data files that contain data about AirBnbs in Munich.
 
 Essentially Inside Airbnb provides three different files: 
 * Calendar: contains prices plus minimum nights to stay per listing and date
@@ -38,15 +40,15 @@ To analyze the dataset I follow the CRISP-DM cycle. I start with a quick data ex
 To answer the first two questions I first used the calendar dataset to get an impression of the price variation over time. As I assumed the prices are by far the highest during September when the Oktoberfest takes place. Besides there's a weekly seasonality that shows higher prices during the weekend. The AirBnBs tend to be cheapest during spring. The peak during April is probably due to a hugh spring festival in Munich. 
 ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/average_price_per_night.png)
 
-Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I exluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the daily average booking prices of all AirBnBs in Munich. ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/prices_at_booking_time.png)
-In the boxplot you can see that the average rental prices tend to be higher if the booking is made during August or September. So the Oktoberfest-effect still influences the prices for future rentals, although the rental date is not in September when the Oktoberfest takes place. Thus, if you want to travel to Munich, it is probably cheaper to make the booking in another month.
-
+Since its sometimes cheaper or more expensive to book at certain times of a year I investigated if the average booking price varies over time. Therefore I exluded the booking prices of September to remove the high prices during the Oktoberfest and then calculated the average booking prices of all AirBnBs at the time the data has been scraped. ![alt]({{ site.url }}{{ site.baseurl }}/images/munich-airbnb-data/prices_at_booking_time.png)
+In the boxplot you can see that the average booking prices tend to be higher if the booking is made during August or September. So the Oktoberfest-effect still influences the prices for future rentals, although the rental date is not in September when the Oktoberfest takes place. Thus, if you want to travel to Munich, it is probably cheaper to make the booking in another month.
 
 ## Data cleaning
+To answer the next questions the listings dataset has been used.
 The following steps have been neccessary to get a clean listings dataset for further processing:
 * Reformat prices
-* Drop listings with extremely high or low prices
-* Drop features with more than 70% missing values
+* Drop listings with extremely high or low prices (outliers)
+* Drop features with more than 80% missing values
 * Drop listings that are duplicates
 * Drop listings with missing geolocation
 * Drop inactive listings (no activity in 365 days)
@@ -63,10 +65,10 @@ ANZAHL DER CATEGORICALs EINFÜGEN
 ### Text-based features
 Although reviews and descriptions of AirBnBs probably contain valuable information I haven't performed advanced natural language processing (NLP). I only created two text-based features:
 * A binary variable containing information about an existing roof top terracce (since roof top terracces in cities are super cool and could increase the price).
-* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description or summary feature. I used regulare expressions to search for square meters (and all possible abbreviations of it) to find numbers related to the size.
+* One possible driver of the price could be the size of the AirBnb. Since the feature "square_feet" is missing in most cases, i tried to get that information from the description feature. I used regulare expressions to search for the unit square meters (and at least most possible abbreviations of it) to find numbers related to the size.
 
 ### Binning of numerical features
-There are several features containing rates or review scores. I used binning to build groups of these features since e.g. scores that are below 8/10 points can be considered as bad on AirBnB.
+There are several features containing rates or review scores (e.g. for cleanliness or location). I used binning to build groups of these features since e.g. scores that are below 8/10 points can be considered as bad on AirBnB.
 
 ### Location based features
 The dataset provides the latitude and longitude of each AirBnb. I've looked up the geolocation of several points of interest in Munich (e.g. where the Oktoberfest takes place, the Hofbraeuhaus and the Marienplatz, which is basically the city center) and calculated the haversine distance (greate circle distance) to these points. Afterwards I've calculated the average distance to all points of interest as additional feature.
@@ -75,22 +77,25 @@ The dataset provides the latitude and longitude of each AirBnb. I've looked up t
 The features "host_since", "first_review" and "last_review" represent timestamps which have been used to calculate the elapsed time till today. 
 
 ### Feature selection
-To reduce the number of features several feature selection steps have been performed:
-* Removed all features related to the host neighbourhood - this shouldn't impact the price.
-* Manually selected amenities that could influence the price.
+To reduce the high dimensionality of the dataset, several feature selection steps have been performed:
+* Manually selected amenities that are more likely to influence the price.
 * Used correlations to find collinear features and remove highly correlated features.
-* Dropped binary features with either true or false occuring very seldom.
+* Dropped binary features with low variance.
 * Dropped features with more than 70% of missing values.
 
 
 ## Modeling 
 To predict the AirBnB prices I trained a regression model with the XGBoost algorithm. 
 
-Although XGBoost is able to handle missing values, all numerical features but the "size" feature have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The "size" feature has been imputed by using a Random Forest Regressor with manually chosen features that could influence the size of the AirBnB. The imputers have only been trained on the training set to avoid data leakage.
+Although XGBoost is able to handle missing values, all numerical features have been imputed with the sklearn Iterative Imputer (which is basically an iterative Bayesian Ridge regression). The imputers have only been trained on the training set to avoid data leakage. No feature or target scaling has been used since XGBoost (and tree-based models in general) are invariant to monotonic transformations like log-transform, etc..
 
-The model has been evaluated using 10-fold cross-validation and has an average r-squared of 0.71 on the training set and 0.44 on the test set. Thus the model seems to overfit and only explains 0.44 of the prices variance. 
-
-
-No feature or target scaling has been used since XGBoost (and tree-based models in general) should be invariant to monotonic transformations like log-transform, etc..
+XGBoost has a large number of parameters which can be tuned. To speed up the hyperparameter tuning Randomized Search has been used instead of a gridsearch.
+Afterwards a model has been trained with the best parameter set found. On the training set it has an r-squared of XXX, on the test set of XXX. The mean absolute error of the training set is XXX and of the test set is XXX. Thus the price seems to be influenced by features not available in the dataset and the error is to high to use it for predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
 
 ## Model explanation
+I used the XGBoost feature importance to see which features influence the price most. The features with the highest importance are:
+* F1
+* F2
+* F3
+
+Afterwards I build an explanation model with SHAP library. The resulting SHAP values have been used to create a summary plot which shows how feature values influence the price. In the summary plot you can e.g. see that the feature XXX increases the price if it has a HIGH/LOW value.
