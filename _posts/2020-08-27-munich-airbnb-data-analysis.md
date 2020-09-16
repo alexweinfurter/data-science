@@ -3,7 +3,7 @@ title: "Munich AirBnb Data Analysis"
 date: 2020-08-27
 excerpt: "Exploratory data analysis of Munich AirBnb data and prediction of AirBnb prices."
 header:
-	image: /images/munich-airbnb-data/munich_photo.jpg
+   image: /images/munich-airbnb-data/munich_photo.jpg
 ---
 
 #WORK IN PROGRESS
