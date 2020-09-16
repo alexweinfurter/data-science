@@ -122,7 +122,7 @@ Afterwards a model has been trained with the best parameter set found. The model
 | Training set|  0.884 | 10.8  |
 | Test set|  0.499 | 23.0 |
 
-Since the model only explains parts of the price variance it seems to be influenced by features not available in the dataset. The mean absolut error is to high to use it for good predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
+Since the model only explains parts of the price variance it seems to be influenced by features not available in the dataset and overfits the training set. The mean absolut error is to high to use it for good predictions. Nevertheless the model can help us understanding how the known parameters influence the price.
 
 ## Model explanation
 To answer the last question I used the XGBoost feature importance as well as SHAP values. The features with the highest importance for the price predictions of the model are:
