@@ -203,12 +203,9 @@ def breed_detector(img_path):
 
 In the images below you can see some of the predictions made by the <code>breed_detector</code>.
 
-
 ![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_schafer_dog.png)
 
-
 ![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_johnny_depp.png)
-
 
 ![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_saint_bernard.png)
 
