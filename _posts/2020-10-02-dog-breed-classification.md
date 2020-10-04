@@ -58,7 +58,7 @@ faces = face_cascade.detectMultiScale(gray)
 
 As you can see in the image below it even outputs the location (x/y-coordinates and width + height of a rectangle) of the detected face.
 
-![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/human.png)
+![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/human.png)
 
 In this project it's only necessary to know if a face exists in an image at all. Therefore the length of the <code>faces</code> array is checked to decide whether there is a human or not:
 ```python
@@ -203,11 +203,11 @@ def breed_detector(img_path):
 
 In the images below you can see some of the predictions made by the <code>breed_detector</code>.
 
-![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_schafer_dog.png)
+![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_schafer_dog.PNG)
 
-![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_johnny_depp.png)
+![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_johnny_depp.PNG)
 
-![alt]({{ site.url }}{{ site.baseurl }}/images/dog-breed-classification/pred_saint_bernard.png)
+![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_saint_bernard.PNG)
 
 ## Future work
 To enhance the implemented classification model the following steps could be considered:
