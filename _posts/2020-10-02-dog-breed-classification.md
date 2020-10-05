@@ -211,11 +211,11 @@ In the images below you can see some of the predictions made by the <code>breed_
 ![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_saint_bernard.PNG)
 
 ## Conclusion
-In this project a dog breed classifier has been trained which achieves over 80% accuracy with relativly low effort. The project has shown that by using Transfer Learning it is possible to train good classification models even with relativly small datasets with a lot of different classes (and thus only few instances per class). Models trained with Transfer Learning not only outperformed the CNN made from scratch by far, it also decreased the training time a lot what makes iterations for model improvement way faster and cheaper. 
+In this project a dog breed classifier has been trained which achieves over 80% accuracy with relativly low effort. The project has shown that by using Transfer Learning it is possible to train good classification models even with relativly small datasets with a lot of different classes (and thus only few instances per class). Models trained with Transfer Learning not only outperformed the CNN made from scratch by far, it also decreased the training time a lot what makes iterations for model improvement way faster and cheaper. Furthermore it was interesting to see how surprisingly accurate the pretrained face detection model has been without using any deep-learning / CNN based classification algorithms (using a test set of 100 images of humans, it detected a human in each image and only 11% humans in a set of 100 dogs).
 
 
 ## Future work
-To enhance the implemented classification model the following steps could be considered:
+To enhance the implemented dog breed classification model the following steps could be considered:
 1. Easy idea but not that easy to do: get a larger training dataset.
 2. Augment the given image data by using the corresponding Keras functionalities. The images could e.g. be rotated, shifted, zoomed, etc..
 3. Deal with the class imbalance (some breeds have more than twice as many instances as others), e.g. by using <code>class_weights</code>. This would influence the loss function and give higher weights to rare classes.
