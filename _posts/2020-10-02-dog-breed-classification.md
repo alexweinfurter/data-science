@@ -27,6 +27,7 @@ Using images of humans and dogs and leveraging face detection algorithms as well
 4. Training of a Convolutional Neural Network to predict the dog breed.
 5. Training of a better Convolutional Neural Network by leveraging Transfer Learning using the bottleneck features of a pretrained Resnet50 model.
 
+All Convolutional Neural Networks are evaluated by using the <code>accuracy</code> metric (= fraction of all correctly classified samples) which is suitable for classification tasks. Keras computes the accuracy correctly for multiclass problems as in this project by automatically using <a href="https://keras.io/api/metrics/accuracy_metrics/#categoricalaccuracy-class">Categorical Accuracy</a>.
 
 ## Dataset
 Before going into the classification details, we have a look at the two datasets used in this project. One dataset consists of images of humans (13233 in total), the other one contains dog images (8351 in total).
@@ -208,6 +209,10 @@ In the images below you can see some of the predictions made by the <code>breed_
 ![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_johnny_depp.PNG)
 
 ![alt]({{site.url}}{{site.baseurl}}/images/dog-breed-classification/pred_saint_bernard.PNG)
+
+## Conclusion
+In this project a dog breed classifier has been trained which achieves over 80% accuracy with relativly low effort. The project has shown that by using Transfer Learning it is possible to train good classification models even with relativly small datasets with a lot of different classes (and thus only few instances per class). Models trained with Transfer Learning not only outperformed the CNN made from scratch by far, it also decreased the training time a lot what makes iterations for model improvement way faster and cheaper.
+
 
 ## Future work
 To enhance the implemented classification model the following steps could be considered:
